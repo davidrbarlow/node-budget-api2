@@ -70,10 +70,10 @@ var UserSchema = new mongoose.Schema({
   UserSchema.statics.findByToken = function(token) {
     var User = this;
     var decoded;
-  console.log('test',token);
+ 
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log('dec',decoded);
+      
     } catch (e){
       return Promise.reject();
     }
@@ -92,7 +92,7 @@ var UserSchema = new mongoose.Schema({
     if (user.isModified('password')){
       bcrypt.genSalt(10, (err,salt) => {
        bcrypt.hash(user.password, salt, (err,hash)=>{
-           console.log(user);
+           
          user.password = hash;
          next();
         });
@@ -105,17 +105,17 @@ var UserSchema = new mongoose.Schema({
 
   UserSchema.statics.findByCredentials = function (email, password){
     var User = this;
-
+    console.log('find by cred');
     return User.findOne({email}).then((user) => {
       if(!user){
         return Promise.reject
       }
         return new Promise((resolve, reject) =>{
         bcrypt.compare(password, user.password, (err,res) =>{
-        //  console.log(err);
+    
           if (res === true) {
             resolve(user);
-            //return user
+        
           } else {
             reject();};
         });

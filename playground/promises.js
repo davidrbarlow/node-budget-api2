@@ -1,35 +1,36 @@
 console.log('test1');
  
-  function1 = (test) =>{
-    console.log('func1');
-   return new Promise(function(resolve, reject) {
-        if (test==='hi'){
-            console.log('if');  
-        resolve(test);}
-        else{
-            console.log('else'); 
-            reject('reject');
-        }
-      });
+//   function1 = (test) =>{
+//     console.log('func1');
+//    return new Promise(function(resolve, reject) {
+//         if (test==='hi'){
+//             console.log('if');  
+//         resolve(test);}
+//         else{
+//             console.log('else'); 
+//             reject('reject');
+//         }
+//       });
 
-}
-
-  
-outerFunction = (outer) => {
- return function1(outer).then((value) => {
-       console.log('then');
-    console.log(value);
-    return(value);
-  }).catch((e)=>{return Promise.reject(e)});
-}
-
-newPageFunc = () => {
-    outerFunction('his').then((res)=>{console.log('new page',res)}).catch
-    ((e)=>{console.log(e)});
-}
+// }
 
 
-//newPageFunc();
+//  outerFunction = (outer) => {
+//  return function1(outer).then((value) => {
+//        console.log('then');
+//     console.log(value);
+//     return(value);
+//   }).then(()=>{console.log('second then')}).catch((e)=>{return Promise.reject(e)});
+// };
+
+
+// newPageFunc = () => {
+//     outerFunction('hi').then((res)=>{console.log('new page',res)}).catch
+//     ((e)=>{console.log(e)});
+// }
+
+
+// newPageFunc();
 
 
 // outerFunction = (outer) => {
@@ -67,14 +68,18 @@ outerFunction2 = async (outer) => {
   
   };
 
-newPageFunc2 = async () => {
-    try{
-       const res = await outerFunction2('his');
-       console.log('new page2',res);
-    } catch(e) {
-        console.log(e)
-    }
-}
+// newPageFunc2 = async () => {
+//     try{
+//        const res = await outerFunction2('his');
+//        console.log('new page2',res);
+//     } catch(e) {
+//         console.log(e)
+//     }
+// }
 
+newPageFunc2 = () => {
+    outerFunction2('his').then((res)=>{console.log('new page',res)}).catch
+    ((e)=>{console.log(e)});
+}
 
 newPageFunc2();
