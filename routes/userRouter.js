@@ -44,7 +44,6 @@ userRouter.get('/me',authenticate,(req, res) => {
 
 userRouter.post('/login',  async (req, res) =>{
     try{
-        console.log('login route called');
         const body = _.pick(req.body, ['email', 'password']);
         const user = await User.findByCredentials(body.email, body.password);
         const token = await user.generateAuthToken();
@@ -57,7 +56,6 @@ userRouter.post('/login',  async (req, res) =>{
 
 userRouter.delete('/logout/token', authenticate, async (req,res) => {
     try{
-        console.log('logout token',req.token);
         await req.user.removeToken(req.token);
         res.status(200).send();
     } 
