@@ -10,18 +10,30 @@ var TransactionSchema = new mongoose.Schema({
       amount:{
         type: Number,
         default: null,
-        required: tru
+        required: true
       },
       postedAt:{
         type: Number,
         default: null
       },
+      balance:{
+        type: Number,
+        default: null
+      },
+      accountType:{
+        type: String,
+        required: true,
+        minlength: 1,
+        trim: true
+      },
       cycle:{
         type: String,
         required: false,
-        minlength: 1,
+        minlength: 0,
         trim: true
       }
 });
 
-module.exports={TransactionSchema};
+const Transaction = mongoose.model('Transaction', TransactionSchema);
+
+module.exports={Transaction};
