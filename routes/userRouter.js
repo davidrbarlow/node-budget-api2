@@ -1,8 +1,8 @@
 const express = require('express');
 const userRouter = express.Router();
 const _ = require('lodash');
-var {mongoose} = require('../db/mongoose');
-var {authenticate} = require('../middleware/authenticate');
+const {mongoose} = require('../db/mongoose');
+const {authenticate} = require('../middleware/authenticate');
 
 const {User} = require('../models/user');
 

@@ -2,17 +2,18 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const csv = require('fast-csv');
 const _ = require('lodash');
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const {ObjectID} = require('mongodb');
 const moment = require('moment');
 
 const transactionRouter = express.Router();
 
 const {Transaction} = require('../models/transaction');
+const {authenticate} = require('../middleware/authenticate');
 
 transactionRouter.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization,x-auth");
   res.header("Access-Control-Expose-Headers", "x-auth");
   //  res.header("Content-Type : text/plain");
   res.header('Access-Control-Allow-Methods','GET,PUT,POST,DELETE,PATCH');
@@ -21,6 +22,7 @@ transactionRouter.use(function(req, res, next) {
   if ('OPTIONS' == req.method) {
       //res.send(200);
       res.header("Access-Control-Allow-Origin", "*").sendStatus(200);
+      
   }
   else {
   next();
@@ -31,7 +33,7 @@ transactionRouter.use(function(req, res, next) {
 
 transactionRouter.use(fileUpload());
 
-transactionRouter.post('/upload',  (req, res) =>{
+transactionRouter.post('/upload',  authenticate, (req, res) =>{
   const headers = [,'postedAt','description','amount',,'balance',,,];
   console.log('req ',req.files.file);
   const transactionFile = req.files['file'];
@@ -86,7 +88,7 @@ transactionRouter.post('/upload',  (req, res) =>{
   
 });
 
-transactionRouter.get('/', (req,res) =>{
+transactionRouter.get('/', authenticate, (req,res) =>{
   Transaction.find().then((transactions)=>{
     res.send({transactions})
   }).catch((e)=>{
@@ -95,7 +97,7 @@ transactionRouter.get('/', (req,res) =>{
 
 });
 
-transactionRouter.post('/transaction', (req,res)=>{
+transactionRouter.post('/transaction', authenticate, (req,res)=>{
   const transaction = new Transaction({
     postedAt: req.body.postedAt,
     description: req.body.description,
@@ -111,7 +113,7 @@ transactionRouter.post('/transaction', (req,res)=>{
   });
 });
 
-transactionRouter.get('/transaction/:id', (req,res)=>{
+transactionRouter.get('/transaction/:id', authenticate, (req,res)=>{
   var id = req.params.id;
   if (!ObjectID.isValid(id)){
     return res.status(404).send();
@@ -127,7 +129,7 @@ transactionRouter.get('/transaction/:id', (req,res)=>{
     })
 });
 
-transactionRouter.patch('/edit/:id',(req,res) =>{
+transactionRouter.patch('/edit/:id', authenticate, (req,res) =>{
   var id = req.params.id;
   var body = _.pick(req.body, ['postedAt', 'description', 'amount', 'cycle']);
   
@@ -156,7 +158,7 @@ transactionRouter.patch('/edit/:id',(req,res) =>{
 
 });
 
-transactionRouter.delete('/remove/:id', (req, res) => {
+transactionRouter.delete('/remove/:id', authenticate, (req, res) => {
   var id = req.params.id;
   if (!ObjectID.isValid(id)){
     return res.status(404).send();
@@ -178,9 +180,8 @@ transactionRouter.delete('/remove/:id', (req, res) => {
 
 //Site.deleteMany({ userUID: uid, id: { $in: [10, 2, 3, 5]}}, function(err) {})
 
-transactionRouter.patch('/removeSelected', (req,res) =>{
+transactionRouter.patch('/removeSelected',  authenticate, (req,res) =>{
   const body = _.pick(req.body, ['ids']);
-  console.log('body ',body);
   for (let i in body.ids){
     if (!ObjectID.isValid(body.ids[i])){
       return res.status(404).send();
