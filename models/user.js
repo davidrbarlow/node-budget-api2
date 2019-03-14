@@ -47,10 +47,24 @@ var UserSchema = new mongoose.Schema({
     var user = this;
     var access = 'auth';
     var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
-  
-    user.tokens = user.tokens.concat([{access,token}]);
-  
-    return user.save().then(()=>{
+  // replace concat with findIndex
+  //https://stackoverflow.com/questions/35206125/javascript-es6-es5-find-in-array-and-change
+  //const userTokens = user.tokens;
+  let accessKeyCount = 0
+  //user.tokens = user.tokens.concat([{access,token}]);
+  let userTokens=[...user.tokens._parent.tokens];
+  userTokens.map((tokeninMap)=>{
+    if(tokeninMap['access'] === access){
+      tokeninMap['token'] = token;
+      accessKeyCount++;
+    }  
+  });
+
+  if (accessKeyCount === 0){
+    user.tokens._parent.tokens = [...userTokens, {access, token}];
+  }
+
+  return user.save().then(()=>{
       return token;
     });
   };

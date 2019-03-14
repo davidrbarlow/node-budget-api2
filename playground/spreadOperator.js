@@ -23,6 +23,58 @@ const runlist = async () => {
 
 }
 
-runlist();
+//runlist();
+
+const user = { "id": "test",
+                "email":"abc123",
+                "tokens":[{"access":"auth","token":"overwriteMe"},{"access":"test","token":"doNotOverwriteMe"}]
+              };
+  const user2 = { "id": "test",
+  "email":"abc123",
+  "tokens":[{"access":"test","token":"doNotOverwriteMe"}]
+};
+access = "auth";
+token = "overwritten";
+let userTokens = user2.tokens;
+console.log(user2.tokens);
+console.log('tokens 2');
+const tokens2 = [...userTokens];
+console.log(tokens2);
+console.log('loop');
+let accessCount=0
+Object.keys(userTokens).forEach((key)=>{
+  if(userTokens[key].access === access){
+    userTokens[key].token = token;
+    accessCount++;
+  };
+});
+
+if (accessCount === 0){
+  userTokens = [...userTokens, {access, token}]
+}
+
+console.log(userTokens, accessCount);
+
+tokenb = "mapOverwritten";
+userTokens = user2.tokens;
+let accessCountMap=0;
+userTokens.map((tokeninMap)=>{
+  if(tokeninMap.access === access){
+    tokeninMap.token = token;
+    accessCountMap++;
+  }  
+});
+
+if (accessCount === 0){
+  userTokens = [...userTokens, {access, token}]
+}
+
+
+console.log("map");
+console.log(userTokens, accessCount);
+
+
+
+
 
 //console.log("state = ", [...state.selectedTrasactionIds, 4]);
