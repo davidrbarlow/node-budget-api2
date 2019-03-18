@@ -16,7 +16,9 @@ userRouter.use(function(req, res, next) {
     
     if ('OPTIONS' == req.method) {
         //res.send(200);
-        res.header("Access-Control-Allow-Origin", "*").sendStatus(200);
+        // res.header("Access-Control-Allow-Origin", "*").sendStatus(200);
+        //https://barlow-budget-app-api.herokuapp.com/
+        res.header("Access-Control-Allow-Origin","https://barlow-budget-app-api.herokuapp.com/").sendStatus(200);
     }
     else {
     next();
@@ -31,8 +33,7 @@ userRouter.post('/', (req,res) => {
     user.save().then(()=>{
         return user.generateAuthToken();
     }).then((token)=>{
-        res.header({'x-auth': token,
-    'Access-Control-Allow-Origin':'*'}).send(user);
+        res.header('x-auth', token).send(user);
     }).catch((e) => {
         res.status(400).send(e);
     });
