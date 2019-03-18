@@ -18,7 +18,7 @@ userRouter.use(function(req, res, next) {
         //res.send(200);
         // res.header("Access-Control-Allow-Origin", "*").sendStatus(200);
         //https://barlow-budget-app-api.herokuapp.com/
-        res.header("Access-Control-Allow-Origin","https://barlow-budget-app-api.herokuapp.com/").sendStatus(200);
+        res.header("Access-Control-Allow-Origin","https://barlow-budget-app.herokuapp.com/").sendStatus(200);
     }
     else {
     next();
