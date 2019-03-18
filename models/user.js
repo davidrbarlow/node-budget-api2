@@ -34,6 +34,12 @@ var UserSchema = new mongoose.Schema({
     }]
   });
 
+  UserSchema.virtual('transaction', {
+    ref: 'Transaction',
+    localField: '_id',
+    foreignField: 'owner'
+  });
+
   // removes everything but userid and and email, so only user id and email are sent back.
   UserSchema.methods.toJSON = function () {
     var user = this;

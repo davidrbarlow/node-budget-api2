@@ -11,6 +11,7 @@ const transactionRouter = express.Router();
 const {Transaction} = require('../models/transaction');
 const {authenticate} = require('../middleware/authenticate');
 
+
 transactionRouter.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization,x-auth");
@@ -51,6 +52,7 @@ transactionRouter.post('/upload',  authenticate, (req, res) =>{
           data.amount=Math.round(data.amount*100);
           //console.log("data.amount : ",data.amount);
           data.accountType='Bank';
+          data.owner=req.user._id;
           transactions.push(data);
           //console.log(moment.unix(data.postedAt).format('MM/DD/YYYY'));
       }) 
@@ -89,7 +91,8 @@ transactionRouter.post('/upload',  authenticate, (req, res) =>{
 });
 
 transactionRouter.get('/', authenticate, (req,res) =>{
-  Transaction.find().then((transactions)=>{
+  //await req.user.populate('transactions').execPopulate()
+  Transaction.find({owner: req.user._id}).then((transactions)=>{
     res.send({transactions})
   }).catch((e)=>{
     res.status(400).send(e);
@@ -99,11 +102,13 @@ transactionRouter.get('/', authenticate, (req,res) =>{
 
 transactionRouter.post('/transaction', authenticate, (req,res)=>{
   const transaction = new Transaction({
+    // ...req.body,
     postedAt: req.body.postedAt,
     description: req.body.description,
     amount: req.body.amount,
     cycle: req.body.cycle,
-    accountType: 'NA'
+    accountType: 'NA',
+    owner: req.user._id
   });
   transaction.save().then((doc)=>{
     res.send(doc);
@@ -119,7 +124,7 @@ transactionRouter.get('/transaction/:id', authenticate, (req,res)=>{
     return res.status(404).send();
   }
   Transaction.findOne({
-    _id: id
+    _id: id, owner: req.user._id
   }).then((transaction)=>{
       if (!transaction){
         res.status(404).send();
@@ -145,7 +150,8 @@ transactionRouter.patch('/edit/:id', authenticate, (req,res) =>{
   }
 
   Transaction.findOneAndUpdate({
-    _id:id
+    _id:id,
+    owner: req.user._id
   }, {$set: body}, {new: true}).then((transaction) => {
     if (!transaction){
 
@@ -165,7 +171,8 @@ transactionRouter.delete('/remove/:id', authenticate, (req, res) => {
   }
 
   Transaction.findOneAndDelete({
-    _id : id
+    _id : id,
+    owner: req.user._id
   }).then((transaction)=>{
     // if (!transaction){
     //   return res.status(404).send();
