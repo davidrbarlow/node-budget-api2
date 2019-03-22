@@ -23,7 +23,6 @@ transactionRouter.use(function(req, res, next) {
   if ('OPTIONS' == req.method) {
       //res.send(200);
       res.header("Access-Control-Allow-Origin", "*").sendStatus(200);
-      
   }
   else {
   next();
@@ -93,6 +92,7 @@ transactionRouter.post('/upload',  authenticate, (req, res) =>{
 transactionRouter.get('/', authenticate, (req,res) =>{
   //await req.user.populate('transactions').execPopulate()
   Transaction.find({owner: req.user._id}).then((transactions)=>{
+   // console.log('transactions being sent',transactions);
     res.send({transactions})
   }).catch((e)=>{
     res.status(400).send(e);
@@ -101,13 +101,13 @@ transactionRouter.get('/', authenticate, (req,res) =>{
 });
 
 transactionRouter.post('/transaction', authenticate, (req,res)=>{
+  //console.log('post transaction ', req.body);
   const transaction = new Transaction({
-    // ...req.body,
     postedAt: req.body.postedAt,
     description: req.body.description,
     amount: req.body.amount,
     cycle: req.body.cycle,
-    accountType: 'NA',
+    accountType: req.body.accountType,
     owner: req.user._id
   });
   transaction.save().then((doc)=>{
@@ -136,7 +136,7 @@ transactionRouter.get('/transaction/:id', authenticate, (req,res)=>{
 
 transactionRouter.patch('/edit/:id', authenticate, (req,res) =>{
   var id = req.params.id;
-  var body = _.pick(req.body, ['postedAt', 'description', 'amount', 'cycle']);
+  var body = _.pick(req.body, ['postedAt', 'description', 'amount', 'accountType', 'cycle']);
   
   if (!ObjectID.isValid(id)){
     return res.status(404).send();

@@ -56,20 +56,24 @@ var UserSchema = new mongoose.Schema({
   // replace concat with findIndex
   //https://stackoverflow.com/questions/35206125/javascript-es6-es5-find-in-array-and-change
   //const userTokens = user.tokens;
-  let accessKeyCount = 0
-  //user.tokens = user.tokens.concat([{access,token}]);
-  let userTokens=[...user.tokens._parent.tokens];
-  userTokens.map((tokeninMap)=>{
-    if(tokeninMap['access'] === access){
-      tokeninMap['token'] = token;
-      accessKeyCount++;
-    }  
+    let accessKeyCount = 0
+    //user.tokens = user.tokens.concat([{access,token}]);
+   let userTokens=[...user.tokens._parent.tokens];
+   // let userTokens=[...user.tokens];
+    //console.log('userTokens', user);
+    userTokens.map((tokeninMap)=>{
+      if(tokeninMap['access'] === access){
+        tokeninMap['token'] = token;
+        accessKeyCount++;
+      }  
   });
-
+  
   if (accessKeyCount === 0){
+    //console.log('user.tokens[0] -> ',user.tokens[0])
     user.tokens._parent.tokens = [...userTokens, {access, token}];
+    //user.tokens[0]= [...userTokens, {access, token}];
+   //user.tokens = user.tokens.concat([{access,token}]);
   }
-
   return user.save().then(()=>{
       return token;
     });
@@ -125,17 +129,14 @@ var UserSchema = new mongoose.Schema({
 
   UserSchema.statics.findByCredentials = function (email, password){
     var User = this;
-    console.log('find by cred');
     return User.findOne({email}).then((user) => {
       if(!user){
         return Promise.reject
       }
         return new Promise((resolve, reject) =>{
         bcrypt.compare(password, user.password, (err,res) =>{
-    
           if (res === true) {
             resolve(user);
-        
           } else {
             reject();};
         });
