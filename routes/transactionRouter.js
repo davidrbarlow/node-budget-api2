@@ -110,11 +110,14 @@ transactionRouter.post('/transaction', authenticate, (req,res)=>{
     accountType: req.body.accountType,
     owner: req.user._id
   });
+
+  setAsBalance = transaction.cycle === 'Balance' ? true : false;
+  transaction.setAsBalance = setAsBalance;
+
   transaction.save().then((doc)=>{
     res.send(doc);
   }).catch((e) => {
     res.status(400).send(e);
-    console.log('post error', e);
   });
 });
 
@@ -135,9 +138,10 @@ transactionRouter.get('/transaction/:id', authenticate, (req,res)=>{
 });
 
 transactionRouter.patch('/edit/:id', authenticate, (req,res) =>{
-  var id = req.params.id;
-  var body = _.pick(req.body, ['postedAt', 'description', 'amount', 'accountType', 'cycle']);
-  
+  let id = req.params.id;
+  let body = _.pick(req.body, ['postedAt', 'description', 'amount', 'accountType', 'cycle']);
+  body.setAsBalance = body.cycle === 'Balance' ? true : false;
+
   if (!ObjectID.isValid(id)){
     return res.status(404).send();
   }
@@ -174,10 +178,6 @@ transactionRouter.delete('/remove/:id', authenticate, (req, res) => {
     _id : id,
     owner: req.user._id
   }).then((transaction)=>{
-    // if (!transaction){
-    //   return res.status(404).send();
-    // }
-    console.log('deleted +', transaction);
     res.send({transaction});
   }).catch((e)=>{
     res.status(400).send();
@@ -197,10 +197,8 @@ transactionRouter.patch('/removeSelected',  authenticate, (req,res) =>{
   Transaction.deleteMany({
      _id: {$in: body.ids}
    }).then((transactions)=>{
-     console.log('deleted ',transactions);
      res.send(transactions);
    }).catch((e)=>{
-    console.log('error ',e);
     res.status(400).send(e);
    })
 })

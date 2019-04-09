@@ -32,6 +32,10 @@ var TransactionSchema = new mongoose.Schema({
         minlength: 0,
         trim: true
       },
+      setAsBalance:{
+        type: Boolean,
+        required: false,
+      },
       owner: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
