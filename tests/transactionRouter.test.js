@@ -70,7 +70,8 @@ describe('POST /transaction/', () => {
           {	postedAt: "1551740954000",
           description: "test",
           amount: "1000.00",
-          cycle: "Monthly"}
+          cycle: "Monthly",
+          accountType: "Manual"}
         )
         .expect(200)
         .expect((res) => {
